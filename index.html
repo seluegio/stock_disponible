@@ -51,8 +51,6 @@
             min-width: 40px; text-align: center;
         }
         .size-btn:hover { border-color: #000; }
-        
-        /* Cuando seleccionas una talla */
         .size-btn.active { background: #000; color: white; border-color: #000; }
 
         /* PRECIO DINÁMICO */
@@ -61,7 +59,6 @@
         .price-value { font-size: 1.4em; font-weight: 800; color: #000; }
         .price-note { font-size: 0.7em; color: #999; font-weight: 400; }
 
-        /* Mensaje de carga */
         .loading { grid-column: 1 / -1; text-align: center; padding: 50px; color: #999; }
     </style>
 </head>
@@ -92,7 +89,6 @@
                 const container = document.getElementById('container');
                 container.innerHTML = ''; 
                 
-                // 1. AGRUPAR ZAPATILLAS POR NOMBRE
                 const inventario = {};
 
                 results.data.forEach(item => {
@@ -101,25 +97,31 @@
                     
                     if (estado === 'Disponible' && foto !== '') {
                         const nombre = item['Nombre del par'].trim();
+                        const sku = item['SKU'] ? item['SKU'].trim() : '';
                         
-                        // Si es la primera vez que vemos este modelo, lo creamos
-                        if (!inventario[nombre]) {
-                            inventario[nombre] = {
-                                nombre: nombre,
+                        // LÓGICA DE AGRUPACIÓN:
+                        // 1. Intentamos usar el SKU como identificador único.
+                        // 2. Si no hay SKU (o es un guión), usamos el Nombre para no romper nada.
+                        let idProducto = sku;
+                        if (!idProducto || idProducto === '-' || idProducto === '0') {
+                            idProducto = nombre;
+                        }
+
+                        if (!inventario[idProducto]) {
+                            inventario[idProducto] = {
+                                nombre: nombre, // Usamos el nombre del primero que pillemos
                                 foto: foto,
                                 tallas: [] 
                             };
                         }
 
-                        // Añadimos la talla y el precio a este modelo
-                        inventario[nombre].tallas.push({
+                        inventario[idProducto].tallas.push({
                             eu: item['Talla EU'],
                             precio: item['Precio Web'] || item['Precio estimado'] || 'Consultar'
                         });
                     }
                 });
 
-                // 2. GENERAR LAS TARJETAS HTML
                 const modelos = Object.values(inventario);
 
                 if (modelos.length === 0) {
@@ -128,16 +130,13 @@
                 }
 
                 modelos.forEach(modelo => {
-                    // Ordenamos las tallas de menor a mayor
+                    // Ordenamos tallas numéricamente
                     modelo.tallas.sort((a, b) => parseFloat(a.eu) - parseFloat(b.eu));
-
-                    // Cogemos el precio de la primera talla para mostrarlo por defecto
+                    
                     const precioInicial = modelo.tallas[0].precio;
                     
-                    // Generamos el HTML de los botones de tallas
                     let botonesHTML = '';
                     modelo.tallas.forEach((t, index) => {
-                        // El primer botón sale marcado como activo por defecto
                         const activo = index === 0 ? 'active' : '';
                         botonesHTML += `<div class="size-btn ${activo}" onclick="cambiarPrecio(this, '${t.precio}')">${t.eu}</div>`;
                     });
@@ -149,12 +148,8 @@
                             </div>
                             <div class="info">
                                 <div class="title">${modelo.nombre}</div>
-                                
                                 <div class="sizes-label">Tallas Disponibles</div>
-                                <div class="sizes-grid">
-                                    ${botonesHTML}
-                                </div>
-
+                                <div class="sizes-grid">${botonesHTML}</div>
                                 <div class="price-area">
                                     <span class="price-label">Precio</span>
                                     <div style="text-align:right">
@@ -170,20 +165,12 @@
             }
         });
 
-        // 3. FUNCIÓN PARA CAMBIAR EL PRECIO AL PULSAR TALLA
         function cambiarPrecio(boton, precio) {
-            // Quitamos la clase 'active' de todos los botones de ESTA tarjeta
             const botones = boton.parentElement.querySelectorAll('.size-btn');
             botones.forEach(b => b.classList.remove('active'));
-            
-            // Se la ponemos al botón pulsado
             boton.classList.add('active');
-            
-            // Buscamos el precio y lo actualizamos
-            // Subimos 3 niveles (sizes-grid -> info -> card) y buscamos .price-value
             const tarjeta = boton.closest('.card');
-            const precioDisplay = tarjeta.querySelector('.price-value');
-            precioDisplay.innerText = precio + ' €';
+            tarjeta.querySelector('.price-value').innerText = precio + ' €';
         }
     </script>
 </body>
