@@ -4,64 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock @joseluis_egio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fafafa; margin: 0; padding: 20px; color: #262626; }
-        
+        :root { --primary: #000; --accent: #2ecc71; --bg: #f8f9fa; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1a1a1a; }
+
         /* CABECERA INSTAGRAM */
         .header { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-            max-width: 600px; 
-            margin-left: auto; 
-            margin-right: auto;
+            text-align: center; margin-bottom: 40px; background: white; padding: 20px; 
+            border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+            max-width: 600px; margin-left: auto; margin-right: auto;
         }
-        .insta-link { 
-            text-decoration: none; 
-            color: inherit; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 10px; 
-            transition: transform 0.2s;
-        }
-        .insta-link:hover { transform: scale(1.05); }
-        .insta-logo { width: 40px; height: 40px; }
-        .insta-user { font-size: 1.5em; font-weight: bold; margin: 0; }
-        .cta { display: block; margin-top: 10px; color: #8e8e8e; font-size: 0.9em; }
+        .insta-link { text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 12px; transition: transform 0.2s; }
+        .insta-link:hover { transform: scale(1.02); }
+        .insta-logo { width: 42px; height: 42px; }
+        .insta-user { font-size: 1.4em; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        .cta { display: block; margin-top: 8px; color: #666; font-size: 0.9em; font-weight: 500; }
 
-        /* GRID DE ZAPATILLAS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
         
+        /* TARJETA */
         .card { 
-            background: white; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-            transition: transform 0.2s, box-shadow 0.2s; 
-            display: flex; 
-            flex-direction: column;
+            background: white; border-radius: 16px; overflow: hidden; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: all 0.3s ease; 
+            display: flex; flex-direction: column; position: relative;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+
         .image-container { 
-            height: 250px; 
-            background: #fff; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-bottom: 1px solid #f0f0f0; 
-            padding: 10px;
+            height: 260px; background: #fff; display: flex; align-items: center; justify-content: center; 
+            padding: 20px; position: relative;
         }
-        img { width: 100%; height: 100%; object-fit: contain; }
+        img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+
+        .info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .title { font-weight: 800; font-size: 1.1em; margin-bottom: 15px; line-height: 1.4; color: #000; }
         
-        .info { padding: 15px; text-align: left; }
-        .title { font-weight: 600; font-size: 1em; margin-bottom: 5px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .details { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .size { background: #efefef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: 500; }
-        .price { color: #262626; font-weight: bold; font-size: 1.2em; }
+        /* ZONA DE TALLAS */
+        .sizes-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; margin-bottom: 8px; }
+        .sizes-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        
+        .size-btn { 
+            border: 1px solid #eee; background: white; padding: 6px 10px; border-radius: 8px; 
+            font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            min-width: 40px; text-align: center;
+        }
+        .size-btn:hover { border-color: #000; }
+        
+        /* Cuando seleccionas una talla */
+        .size-btn.active { background: #000; color: white; border-color: #000; }
+
+        /* PRECIO DINÁMICO */
+        .price-area { margin-top: auto; border-top: 1px solid #f0f0f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .price-label { font-size: 0.9em; color: #666; }
+        .price-value { font-size: 1.4em; font-weight: 800; color: #000; }
+        .price-note { font-size: 0.7em; color: #999; font-weight: 400; }
+
+        /* Mensaje de carga */
+        .loading { grid-column: 1 / -1; text-align: center; padding: 50px; color: #999; }
     </style>
 </head>
 <body>
@@ -75,12 +76,12 @@
     </div>
 
     <div id="container" class="grid">
-        <p style="text-align:center; width:100%; color:#999">Cargando inventario...</p>
+        <div class="loading">Cargando inventario...</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
-        // --- PEGA AQUÍ TU ENLACE CSV DE GOOGLE SHEETS (MANTÉN LAS COMILLAS) ---
+        // --- PEGA AQUÍ TU ENLACE CSV ---
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2gB1B3KI-Dy48-Rld8Q6EqhoK4qUw8nS3EvEQhpyenkSNuOFt9-d4L-F8w1mGew/pub?output=csv'; 
 
         Papa.parse(sheetUrl, {
@@ -91,43 +92,99 @@
                 const container = document.getElementById('container');
                 container.innerHTML = ''; 
                 
-                let contador = 0;
+                // 1. AGRUPAR ZAPATILLAS POR NOMBRE
+                const inventario = {};
 
                 results.data.forEach(item => {
-                    // LIMPIEZA DE DATOS
                     const estado = item['Estado'] ? item['Estado'].trim() : '';
                     const foto = item['Foto URL'] ? item['Foto URL'].trim() : '';
-
-                    // FILTRO: Solo Disponible + Con Foto
+                    
                     if (estado === 'Disponible' && foto !== '') {
-                        contador++;
-                        const nombre = item['Nombre del par'];
-                        const talla = item['Talla EU'];
-                        // Busca precio en 'Precio Web', si no, en 'Precio estimado'
-                        const precio = item['Precio Web'] || item['Precio estimado'] || 'Consultar';
+                        const nombre = item['Nombre del par'].trim();
+                        
+                        // Si es la primera vez que vemos este modelo, lo creamos
+                        if (!inventario[nombre]) {
+                            inventario[nombre] = {
+                                nombre: nombre,
+                                foto: foto,
+                                tallas: [] 
+                            };
+                        }
 
-                        container.innerHTML += `
-                            <div class="card">
-                                <div class="image-container">
-                                    <img src="${foto}" alt="${nombre}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
-                                </div>
-                                <div class="info">
-                                    <div class="title">${nombre}</div>
-                                    <div class="details">
-                                        <span class="size">EU ${talla}</span>
-                                        <span class="price">${precio} €</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                        // Añadimos la talla y el precio a este modelo
+                        inventario[nombre].tallas.push({
+                            eu: item['Talla EU'],
+                            precio: item['Precio Web'] || item['Precio estimado'] || 'Consultar'
+                        });
                     }
                 });
 
-                if (contador === 0) {
-                    container.innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">No hay stock disponible ahora mismo.</p>';
+                // 2. GENERAR LAS TARJETAS HTML
+                const modelos = Object.values(inventario);
+
+                if (modelos.length === 0) {
+                    container.innerHTML = '<div class="loading">No hay stock disponible ahora mismo.</div>';
+                    return;
                 }
+
+                modelos.forEach(modelo => {
+                    // Ordenamos las tallas de menor a mayor
+                    modelo.tallas.sort((a, b) => parseFloat(a.eu) - parseFloat(b.eu));
+
+                    // Cogemos el precio de la primera talla para mostrarlo por defecto
+                    const precioInicial = modelo.tallas[0].precio;
+                    
+                    // Generamos el HTML de los botones de tallas
+                    let botonesHTML = '';
+                    modelo.tallas.forEach((t, index) => {
+                        // El primer botón sale marcado como activo por defecto
+                        const activo = index === 0 ? 'active' : '';
+                        botonesHTML += `<div class="size-btn ${activo}" onclick="cambiarPrecio(this, '${t.precio}')">${t.eu}</div>`;
+                    });
+
+                    const card = `
+                        <div class="card">
+                            <div class="image-container">
+                                <img src="${modelo.foto}" alt="${modelo.nombre}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+                            </div>
+                            <div class="info">
+                                <div class="title">${modelo.nombre}</div>
+                                
+                                <div class="sizes-label">Tallas Disponibles</div>
+                                <div class="sizes-grid">
+                                    ${botonesHTML}
+                                </div>
+
+                                <div class="price-area">
+                                    <span class="price-label">Precio</span>
+                                    <div style="text-align:right">
+                                        <div class="price-value">${precioInicial} €</div>
+                                        <div class="price-note">Envío no incl.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
             }
         });
+
+        // 3. FUNCIÓN PARA CAMBIAR EL PRECIO AL PULSAR TALLA
+        function cambiarPrecio(boton, precio) {
+            // Quitamos la clase 'active' de todos los botones de ESTA tarjeta
+            const botones = boton.parentElement.querySelectorAll('.size-btn');
+            botones.forEach(b => b.classList.remove('active'));
+            
+            // Se la ponemos al botón pulsado
+            boton.classList.add('active');
+            
+            // Buscamos el precio y lo actualizamos
+            // Subimos 3 niveles (sizes-grid -> info -> card) y buscamos .price-value
+            const tarjeta = boton.closest('.card');
+            const precioDisplay = tarjeta.querySelector('.price-value');
+            precioDisplay.innerText = precio + ' €';
+        }
     </script>
 </body>
 </html>
