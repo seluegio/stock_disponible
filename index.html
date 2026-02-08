@@ -9,7 +9,7 @@
         :root { --primary: #000; --accent: #2ecc71; --bg: #f8f9fa; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1a1a1a; }
 
-        /* CABECERA INSTAGRAM */
+        /* CABECERA */
         .header { 
             text-align: center; margin-bottom: 40px; background: white; padding: 20px; 
             border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
@@ -41,7 +41,6 @@
         .info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .title { font-weight: 800; font-size: 1.1em; margin-bottom: 15px; line-height: 1.4; color: #000; }
         
-        /* ZONA DE TALLAS */
         .sizes-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; margin-bottom: 8px; }
         .sizes-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         
@@ -53,12 +52,10 @@
         .size-btn:hover { border-color: #000; }
         .size-btn.active { background: #000; color: white; border-color: #000; }
 
-        /* PRECIO DINÁMICO */
         .price-area { margin-top: auto; border-top: 1px solid #f0f0f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
         .price-label { font-size: 0.9em; color: #666; }
         .price-value { font-size: 1.4em; font-weight: 800; color: #000; }
         .price-note { font-size: 0.7em; color: #999; font-weight: 400; }
-
         .loading { grid-column: 1 / -1; text-align: center; padding: 50px; color: #999; }
     </style>
 </head>
@@ -99,9 +96,11 @@
                         const nombre = item['Nombre del par'].trim();
                         const sku = item['SKU'] ? item['SKU'].trim() : '';
                         
-                        // LÓGICA DE AGRUPACIÓN:
-                        // 1. Intentamos usar el SKU como identificador único.
-                        // 2. Si no hay SKU (o es un guión), usamos el Nombre para no romper nada.
+                        // LIMPIEZA DE PRECIO: Quitamos el símbolo € si viene del Excel
+                        let precioCrudo = item['Precio Web'] || item['Precio estimado'] || 'Consultar';
+                        let precioLimpio = precioCrudo.toString().replace('€', '').trim();
+
+                        // Agrupación por SKU o Nombre
                         let idProducto = sku;
                         if (!idProducto || idProducto === '-' || idProducto === '0') {
                             idProducto = nombre;
@@ -109,7 +108,7 @@
 
                         if (!inventario[idProducto]) {
                             inventario[idProducto] = {
-                                nombre: nombre, // Usamos el nombre del primero que pillemos
+                                nombre: nombre, 
                                 foto: foto,
                                 tallas: [] 
                             };
@@ -117,7 +116,7 @@
 
                         inventario[idProducto].tallas.push({
                             eu: item['Talla EU'],
-                            precio: item['Precio Web'] || item['Precio estimado'] || 'Consultar'
+                            precio: precioLimpio // Guardamos el precio SIN el símbolo
                         });
                     }
                 });
@@ -130,7 +129,6 @@
                 }
 
                 modelos.forEach(modelo => {
-                    // Ordenamos tallas numéricamente
                     modelo.tallas.sort((a, b) => parseFloat(a.eu) - parseFloat(b.eu));
                     
                     const precioInicial = modelo.tallas[0].precio;
@@ -170,6 +168,7 @@
             botones.forEach(b => b.classList.remove('active'));
             boton.classList.add('active');
             const tarjeta = boton.closest('.card');
+            // Aquí también añadimos el € manualmente
             tarjeta.querySelector('.price-value').innerText = precio + ' €';
         }
     </script>
