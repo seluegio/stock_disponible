@@ -3,24 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Disponible</title>
+    <title>Stock @joseluis_egio</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        img { width: 100%; height: 250px; object-fit: contain; }
-        .price { color: green; font-weight: bold; font-size: 1.5em; }
-        .size { color: #666; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fafafa; margin: 0; padding: 20px; color: #262626; }
+        
+        /* CABECERA INSTAGRAM */
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto;
+        }
+        .insta-link { 
+            text-decoration: none; 
+            color: inherit; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+            transition: transform 0.2s;
+        }
+        .insta-link:hover { transform: scale(1.05); }
+        .insta-logo { width: 40px; height: 40px; }
+        .insta-user { font-size: 1.5em; font-weight: bold; margin: 0; }
+        .cta { display: block; margin-top: 10px; color: #8e8e8e; font-size: 0.9em; }
+
+        /* GRID DE ZAPATILLAS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+        
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            display: flex; 
+            flex-direction: column;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .image-container { 
+            height: 250px; 
+            background: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-bottom: 1px solid #f0f0f0; 
+            padding: 10px;
+        }
+        img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .info { padding: 15px; text-align: left; }
+        .title { font-weight: 600; font-size: 1em; margin-bottom: 5px; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .details { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .size { background: #efefef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: 500; }
+        .price { color: #262626; font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
 <body>
-    <h1>👟 Stock Disponible</h1>
-    <div id="container" class="grid">Cargando...</div>
+
+    <div class="header">
+        <a href="https://instagram.com/joseluis_egio" target="_blank" class="insta-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" class="insta-logo">
+            <h1 class="insta-user">@joseluis_egio</h1>
+        </a>
+        <span class="cta">Envía DM para comprar ✈️</span>
+    </div>
+
+    <div id="container" class="grid">
+        <p style="text-align:center; width:100%; color:#999">Cargando inventario...</p>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
-        // --- PEGA AQUÍ TU ENLACE CSV DE GOOGLE SHEETS ---
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2gB1B3KI-Dy48-Rld8Q6EqhoK4qUw8nS3EvEQhpyenkSNuOFt9-d4L-F8w1mGew/pub?output=csv' ; 
+        // --- PEGA AQUÍ TU ENLACE CSV DE GOOGLE SHEETS (MANTÉN LAS COMILLAS) ---
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2gB1B3KI-Dy48-Rld8Q6EqhoK4qUw8nS3EvEQhpyenkSNuOFt9-d4L-F8w1mGew/pub?output=csv'; 
 
         Papa.parse(sheetUrl, {
             download: true,
@@ -30,19 +91,41 @@
                 const container = document.getElementById('container');
                 container.innerHTML = ''; 
                 
+                let contador = 0;
+
                 results.data.forEach(item => {
-                    // Solo muestra si está "Disponible" y TIENE FOTO
-                    if (item['Estado'] === 'Disponible' && item['Foto URL']) {
+                    // LIMPIEZA DE DATOS
+                    const estado = item['Estado'] ? item['Estado'].trim() : '';
+                    const foto = item['Foto URL'] ? item['Foto URL'].trim() : '';
+
+                    // FILTRO: Solo Disponible + Con Foto
+                    if (estado === 'Disponible' && foto !== '') {
+                        contador++;
+                        const nombre = item['Nombre del par'];
+                        const talla = item['Talla EU'];
+                        // Busca precio en 'Precio Web', si no, en 'Precio estimado'
+                        const precio = item['Precio Web'] || item['Precio estimado'] || 'Consultar';
+
                         container.innerHTML += `
                             <div class="card">
-                                <img src="${item['Foto URL']}" onerror="this.style.display='none'">
-                                <h3>${item['Nombre del par']}</h3>
-                                <div class="size">Talla: ${item['Talla EU']}</div>
-                                <div class="price">${item['Precio Web'] || item['Precio estimado']} €</div>
+                                <div class="image-container">
+                                    <img src="${foto}" alt="${nombre}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+                                </div>
+                                <div class="info">
+                                    <div class="title">${nombre}</div>
+                                    <div class="details">
+                                        <span class="size">EU ${talla}</span>
+                                        <span class="price">${precio} €</span>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     }
                 });
+
+                if (contador === 0) {
+                    container.innerHTML = '<p style="text-align:center; width:100%; margin-top:50px;">No hay stock disponible ahora mismo.</p>';
+                }
             }
         });
     </script>
