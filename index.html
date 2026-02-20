@@ -95,8 +95,9 @@
                     if (estado === 'Disponible' && foto !== '') {
                         const nombre = item['Nombre del par'].trim();
                         const sku = item['SKU'] ? item['SKU'].trim() : '';
+                        const tallaCruda = item['Talla EU'] ? item['Talla EU'].trim() : '';
                         
-                        // LIMPIEZA DE PRECIO: Quitamos el símbolo € si viene del Excel
+                        // LIMPIEZA DE PRECIO
                         let precioCrudo = item['Precio Web'] || item['Precio estimado'] || 'Consultar';
                         let precioLimpio = precioCrudo.toString().replace('€', '').trim();
 
@@ -114,10 +115,19 @@
                             };
                         }
 
-                        inventario[idProducto].tallas.push({
-                            eu: item['Talla EU'],
-                            precio: precioLimpio // Guardamos el precio SIN el símbolo
-                        });
+                        // --- FILTRO ANTI-DUPLICADOS DE TALLA ---
+                        if (tallaCruda !== '') {
+                            // Comprobamos si la talla ya existe en la lista de este producto
+                            const existeTalla = inventario[idProducto].tallas.some(t => t.eu === tallaCruda);
+                            
+                            // Si no existe, la añadimos
+                            if (!existeTalla) {
+                                inventario[idProducto].tallas.push({
+                                    eu: tallaCruda,
+                                    precio: precioLimpio
+                                });
+                            }
+                        }
                     }
                 });
 
@@ -131,7 +141,7 @@
                 modelos.forEach(modelo => {
                     modelo.tallas.sort((a, b) => parseFloat(a.eu) - parseFloat(b.eu));
                     
-                    const precioInicial = modelo.tallas[0].precio;
+                    const precioInicial = modelo.tallas[0] ? modelo.tallas[0].precio : 'Consultar';
                     
                     let botonesHTML = '';
                     modelo.tallas.forEach((t, index) => {
@@ -168,7 +178,6 @@
             botones.forEach(b => b.classList.remove('active'));
             boton.classList.add('active');
             const tarjeta = boton.closest('.card');
-            // Aquí también añadimos el € manualmente
             tarjeta.querySelector('.price-value').innerText = precio + ' €';
         }
     </script>
