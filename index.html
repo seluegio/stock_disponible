@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock disponible · @joseluis_egio</title>
+
+    <!-- Para que el enlace se vea bien al compartirlo por WhatsApp / Instagram -->
+    <meta name="description" content="Zapatillas disponibles con tallas y precios actualizados. Envía DM por Instagram para comprar.">
+    <meta property="og:title" content="Stock disponible · @joseluis_egio">
+    <meta property="og:description" content="Zapatillas disponibles con tallas y precios actualizados. Envía DM para comprar.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seluegio.github.io/stock_disponible/">
+    <!-- Opcional: sube una imagen al repo (p. ej. portada.jpg) y descomenta esta línea -->
+    <!-- <meta property="og:image" content="https://seluegio.github.io/stock_disponible/portada.jpg"> -->
+    <meta name="theme-color" content="#f8f9fa">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --text: #1a1a1a; --muted: #666; --soft: #999;
+            --bg: #f8f9fa; --card: #fff; --line: #eee; --accent: #000;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px 16px 48px; color: var(--text); }
+
+        /* CABECERA */
+        .header {
+            text-align: center; margin: 0 auto 28px; background: var(--card); padding: 20px;
+            border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 600px;
+        }
+        .insta-link { text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 12px; transition: transform 0.2s; }
+        .insta-link:hover { transform: scale(1.02); }
+        .insta-logo { width: 42px; height: 42px; }
+        .insta-user { font-size: 1.4em; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        .cta { display: block; margin-top: 8px; color: var(--muted); font-size: 0.9em; font-weight: 500; }
+        .dm-btn {
+            display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 999px;
+            background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9em;
+        }
+
+        /* FILTRO */
+        .toolbar { max-width: 1200px; margin: 0 auto 8px; }
+        .toolbar[hidden] { display: none; }
+        .count { max-width: 1200px; margin: 0 auto 20px; color: var(--soft); font-size: 0.85em; }
+
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+
+        /* TARJETA */
+        .card {
+            background: var(--card); border-radius: 16px; overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card[hidden] { display: none; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+
+        .image-container { height: 260px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .image-container img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+
+        .info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .title { font-weight: 800; font-size: 1.1em; margin: 0 0 15px; line-height: 1.4; }
+
+        .sizes-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; color: var(--soft); font-weight: 600; margin-bottom: 8px; }
+        .sizes-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+
+        .size-btn {
+            font: inherit; color: inherit; border: 1px solid var(--line); background: #fff; padding: 6px 10px; border-radius: 8px;
+            font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.2s; min-width: 44px; min-height: 36px; text-align: center;
+        }
+        .size-btn:hover { border-color: var(--accent); }
+        .size-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .size-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .price-area { margin-top: auto; border-top: 1px solid #f0f0f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .price-value { font-size: 1.4em; font-weight: 800; }
+        .price-note { font-size: 0.7em; color: var(--soft); }
+        .buy-btn {
+            padding: 9px 14px; border-radius: 10px; background: var(--accent); color: #fff;
+            text-decoration: none; font-weight: 600; font-size: 0.85em; white-space: nowrap;
+        }
+
+        .mensaje { grid-column: 1 / -1; text-align: center; padding: 50px 0; color: var(--soft); }
+
+        /* Esqueleto mientras carga */
+        .skeleton { height: 420px; border-radius: 16px; background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+        @keyframes shimmer { to { background-position: -200% 0; } }
+        @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } .card, .insta-link { transition: none; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="https://instagram.com/joseluis_egio" target="_blank" rel="noopener" class="insta-link">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="" width="42" height="42" class="insta-logo">
+            <h1 class="insta-user">@joseluis_egio</h1>
+        </a>
+        <span class="cta">Envía DM para comprar ✈️</span>
+        <a href="https://ig.me/m/joseluis_egio" target="_blank" rel="noopener" class="dm-btn">Enviar DM</a>
+    </header>
+
+    <section class="toolbar" id="toolbar" hidden>
+        <div class="sizes-label">Filtrar por talla</div>
+        <div class="sizes-grid" id="filtro" role="group" aria-label="Filtrar por talla"></div>
+    </section>
+    <p class="count" id="count" aria-live="polite"></p>
+
+    <main id="container" class="grid">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script>
+        // ===================== CONFIGURACIÓN =====================
+        // Cuando publiques SOLO la pestaña "Web" (Archivo > Compartir > Publicar en la web), pega aquí el nuevo enlace CSV.
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2gB1B3KI-Dy48-Rld8Q6EqhoK4qUw8nS3EvEQhpyenkSNuOFt9-d4L-F8w1mGew/pub?output=csv';
+        const DM_URL = 'https://ig.me/m/joseluis_egio';
+
+        const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect width="300" height="200" fill="#f2f2f2"/>' +
+            '<text x="150" y="105" font-family="sans-serif" font-size="16" fill="#aaa" text-anchor="middle">Sin imagen</text></svg>'
+        );
+
+        // ===================== DATOS =====================
+        const limpiar = v => (v ?? '').toString().trim();
+
+        // "44,5" -> 44.5 ; "L" -> Infinity (las tallas de letra van al final)
+        const tallaANumero = t => {
+            const n = parseFloat(t.replace(',', '.'));
+            return Number.isFinite(n) ? n : Infinity;
+        };
+
+        // "45,00 €" -> 45 ; "1.234,50 €" -> 1234.5 ; "" o texto -> null
+        function precioANumero(valor) {
+            const s = limpiar(valor).replace(/€/g, '').replace(/\s/g, '');
+            if (!s) return null;
+            const n = parseFloat(s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s);
+            return Number.isFinite(n) ? n : null;
+        }
+
+        const formatoPrecio = n => n == null
+            ? 'Consultar'
+            : n.toLocaleString('es-ES', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + ' €';
+
+        // "FZ5808-014", "FZ5808 014" y "fz5808014" se agrupan igual; "-" queda vacío
+        const normalizarSku = s => limpiar(s).toUpperCase().replace(/[\s-]+/g, '');
+
+        function agruparInventario(filas) {
+            const modelos = new Map();
+
+            for (const fila of filas) {
+                if (limpiar(fila['Estado']).toLowerCase() !== 'disponible') continue;
+
+                const nombre = limpiar(fila['Nombre del par']);
+                const foto = limpiar(fila['Foto URL']);
+                if (!nombre || !foto) continue;
+
+                const sku = normalizarSku(fila['SKU']);
+                const id = sku && sku !== '0' ? sku : nombre.toLowerCase();
+                const precio = precioANumero(fila['Precio Web'] || fila['Precio estimado']);
+
+                if (!modelos.has(id)) modelos.set(id, { nombre, foto, precioBase: precio, tallas: new Map() });
+                const modelo = modelos.get(id);
+
+                const talla = limpiar(fila['Talla EU']).replace('.', ',');
+                if (!talla) continue;
+
+                // Si la misma talla aparece varias veces, se queda el precio más bajo
+                const actual = modelo.tallas.get(talla);
+                if (!actual || (precio != null && (actual.precio == null || precio < actual.precio))) {
+                    modelo.tallas.set(talla, { talla, precio });
+                }
+            }
+
+            // Lo último que se añadió a la hoja aparece primero
+            return [...modelos.values()].reverse().map(m => ({
+                nombre: m.nombre,
+                foto: m.foto,
+                precioBase: m.precioBase,
+                tallas: [...m.tallas.values()].sort(
+                    (a, b) => tallaANumero(a.talla) - tallaANumero(b.talla) || a.talla.localeCompare(b.talla)
+                )
+            }));
+        }
+
+        // --- FIN DATOS ---
+
+        // ===================== PINTADO =====================
+        const container = document.getElementById('container');
+        const filtroEl = document.getElementById('filtro');
+        const toolbar = document.getElementById('toolbar');
+        const countEl = document.getElementById('count');
+        let filtroActivo = null;
+
+        function el(tag, clase, texto) {
+            const e = document.createElement(tag);
+            if (clase) e.className = clase;
+            if (texto != null) e.textContent = texto;
+            return e;
+        }
+
+        function mostrarMensaje(texto) {
+            container.replaceChildren(el('div', 'mensaje', texto));
+            toolbar.hidden = true;
+            countEl.textContent = '';
+        }
+
+        function crearTarjeta(modelo) {
+            const card = el('article', 'card');
+            card.dataset.tallas = modelo.tallas.map(t => t.talla).join('|');
+
+            const imgBox = el('div', 'image-container');
+            const img = document.createElement('img');
+            img.src = modelo.foto;
+            img.alt = modelo.nombre;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.referrerPolicy = 'no-referrer'; // algunas webs bloquean imágenes enlazadas desde fuera
+            img.addEventListener('error', () => { img.src = PLACEHOLDER; }, { once: true });
+            imgBox.append(img);
+
+            const info = el('div', 'info');
+            info.append(el('h2', 'title', modelo.nombre));
+
+            if (modelo.tallas.length) {
+                info.append(el('div', 'sizes-label', 'Tallas disponibles'));
+                const grid = el('div', 'sizes-grid');
+                grid.setAttribute('role', 'group');
+                grid.setAttribute('aria-label', 'Tallas de ' + modelo.nombre);
+                modelo.tallas.forEach((t, i) => {
+                    const b = el('button', 'size-btn', t.talla);
+                    b.type = 'button';
+                    b.dataset.talla = t.talla;
+                    b.dataset.precio = t.precio ?? '';
+                    b.setAttribute('aria-pressed', String(i === 0));
+                    grid.append(b);
+                });
+                info.append(grid);
+            }
+
+            const precioInicial = modelo.tallas[0] ? modelo.tallas[0].precio : modelo.precioBase;
+            const priceArea = el('div', 'price-area');
+            const priceBox = el('div');
+            priceBox.append(el('div', 'price-value', formatoPrecio(precioInicial)), el('div', 'price-note', 'Envío no incluido'));
+            const buy = el('a', 'buy-btn', 'Pedir por DM');
+            buy.href = DM_URL;
+            buy.target = '_blank';
+            buy.rel = 'noopener';
+            priceArea.append(priceBox, buy);
+            info.append(priceArea);
+
+            card.append(imgBox, info);
+            return card;
+        }
+
+        function seleccionarTalla(card, talla) {
+            let elegido = null;
+            card.querySelectorAll('.size-btn').forEach(b => {
+                const activo = b.dataset.talla === talla;
+                b.setAttribute('aria-pressed', String(activo));
+                if (activo) elegido = b;
+            });
+            if (elegido) {
+                const p = elegido.dataset.precio;
+                card.querySelector('.price-value').textContent = formatoPrecio(p === '' ? null : Number(p));
+            }
+        }
+
+        function aplicarFiltro(talla) {
+            filtroActivo = talla;
+            filtroEl.querySelectorAll('.size-btn').forEach(b =>
+                b.setAttribute('aria-pressed', String((b.dataset.talla || null) === talla)));
+
+            let visibles = 0;
+            container.querySelectorAll('.card').forEach(card => {
+                const tallas = card.dataset.tallas ? card.dataset.tallas.split('|') : [];
+                const mostrar = !talla || tallas.includes(talla);
+                card.hidden = !mostrar;
+                if (mostrar) {
+                    visibles++;
+                    seleccionarTalla(card, talla || tallas[0]);
+                }
+            });
+            countEl.textContent = talla
+                ? `${visibles} ${visibles === 1 ? 'modelo' : 'modelos'} en talla ${talla}`
+                : `${visibles} ${visibles === 1 ? 'modelo disponible' : 'modelos disponibles'}`;
+        }
+
+        function pintar(modelos) {
+            if (!modelos.length) return mostrarMensaje('No hay stock disponible ahora mismo.');
+
+            const frag = document.createDocumentFragment();
+            modelos.forEach(m => frag.append(crearTarjeta(m)));
+            container.replaceChildren(frag); // se inserta todo de una vez
+
+            // Filtro con todas las tallas que hay en stock
+            const todas = [...new Set(modelos.flatMap(m => m.tallas.map(t => t.talla)))]
+                .sort((a, b) => tallaANumero(a) - tallaANumero(b) || a.localeCompare(b));
+            if (todas.length > 1) {
+                const chips = [['Todas', '']].concat(todas.map(t => [t, t])).map(([texto, valor]) => {
+                    const b = el('button', 'size-btn', texto);
+                    b.type = 'button';
+                    b.dataset.talla = valor;
+                    return b;
+                });
+                filtroEl.replaceChildren(...chips);
+                toolbar.hidden = false;
+            }
+            aplicarFiltro(null);
+        }
+
+        // Un único listener para todos los botones de talla de las tarjetas
+        container.addEventListener('click', e => {
+            const b = e.target.closest('.size-btn');
+            if (b) seleccionarTalla(b.closest('.card'), b.dataset.talla);
+        });
+        filtroEl.addEventListener('click', e => {
+            const b = e.target.closest('.size-btn');
+            if (b) aplicarFiltro(b.dataset.talla || null);
+        });
+
+        // ===================== CARGA =====================
+        const ERROR_CARGA = 'No se ha podido cargar el stock. Recarga la página o escríbeme por Instagram.';
+        if (typeof Papa === 'undefined') {
+            mostrarMensaje(ERROR_CARGA);
+        } else {
+            Papa.parse(SHEET_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: 'greedy', // ignora las filas vacías de la pestaña Web
+                complete: res => {
+                    try { pintar(agruparInventario(res.data)); }
+                    catch (err) { console.error(err); mostrarMensaje(ERROR_CARGA); }
+                },
+                error: err => { console.error(err); mostrarMensaje(ERROR_CARGA); }
+            });
+        }
+    </script>
+</body>
+</html>
